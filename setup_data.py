@@ -1,5 +1,6 @@
 import datasets
 import json
+import os
 
 def setup_env_from_ds(ds):
     """
@@ -24,4 +25,4 @@ def setup_env_from_ds(ds):
     json.dump(jsonfile, open('02_NWPU_caption/dataset_nwpu.json', 'w'))
 
 def setup_default():
-    setup_env_from_ds(datasets.load_dataset('KhangTruong/NWPU_Split')['train'])
+    setup_env_from_ds(datasets.load_dataset(os.environ['DATASET'])['train'])
