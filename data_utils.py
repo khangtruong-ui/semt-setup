@@ -3,6 +3,8 @@ import numpy as np
 import os
 from datasets import load_dataset
 
+from config import *
+
 
 def construct_tokenizer(ds):
     wordset = set()
@@ -20,7 +22,7 @@ def load_tokenizer():
     with open('tokenizer.json') as f:
         return json.load(f)
 
-def sentences_mapper(tokenizer, max_length=52):
+def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
     def mapping(item):
         caption = item['caption']
         ids = [tokenizer.get(word) for word in caption.split()]
@@ -39,7 +41,7 @@ def sentences_mapper(tokenizer, max_length=52):
 def get_set(ds):
     tokenizer = load_tokenizer()
     sentence_map = sentence_mapper(tokenizer)
-    mapped_ds = ds.map(sentence_map).batch(512, drop_last_batch=True)
+    mapped_ds = ds.map(sentence_map).batch(BATCH_SIZE, drop_last_batch=True)
     return mapped_ds
 
 def get_train_set():
