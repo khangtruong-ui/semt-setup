@@ -22,5 +22,6 @@ def setup_env_from_ds(ds):
         })
 
     json.dump(jsonfile, open('02_NWPU_caption/dataset_nwpu.json', 'w'))
-  
-setup_env_from_ds(datasets.load_dataset('KhangTruong/NWPU_Split')['train'])
+
+def setup_default():
+    setup_env_from_ds(datasets.load_dataset('KhangTruong/NWPU_Split')['train'])
