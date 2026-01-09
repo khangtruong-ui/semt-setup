@@ -18,10 +18,14 @@ def load_tokenizer():
         return json.load(f)
 
 
-def sentences_mapper(tokenizer, max_length):
+def sentences_mapper(tokenizer, max_length, pad_left: bool, pad_right: bool):
     def mapping(item):
         caption = item['caption']
         ids = [tokenizer.get(word) for word in caption.split()]
+        if pad_left:
+            ids = [1] + ids
+        if pad_right:
+            ids = ids + [2]
         ids.extend([0] * (max_length - len(ids)))
         item['input_ids'] = ids
         return item
