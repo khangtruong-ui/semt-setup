@@ -1,5 +1,7 @@
 import json
 import numpy as np
+import os
+from datasets import load_dataset
 
 
 def construct_tokenizer(ds):
@@ -18,8 +20,7 @@ def load_tokenizer():
     with open('tokenizer.json') as f:
         return json.load(f)
 
-
-def sentences_mapper(tokenizer, max_length):
+def sentences_mapper(tokenizer, max_length=52):
     def mapping(item):
         caption = item['caption']
         ids = [tokenizer.get(word) for word in caption.split()]
@@ -33,4 +34,20 @@ def sentences_mapper(tokenizer, max_length):
         item['pad_right_ids'] = pad_right_ids
         return item
 
-def get_train_set
+    return mapping
+
+def get_set(ds):
+    tokenizer = load_tokenizer()
+    sentence_map = sentence_mapper(tokenizer)
+    mapped_ds = ds.map(sentence_map).batch(512, drop_last_batch=True)
+    return mapped_ds
+
+def get_train_set():
+    return get_set(load_dataset(os.environ['DATASET']).with_format('np')['train'])
+
+def get_test_set():
+    return get_set(load_dataset(os.environ['DATASET']).with_format('np')['test'])
+
+
+
+    
