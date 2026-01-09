@@ -1,6 +1,7 @@
 import json
 import numpy as np
 
+
 def construct_tokenizer(ds):
     wordset = set()
     for item in ds:
@@ -18,15 +19,18 @@ def load_tokenizer():
         return json.load(f)
 
 
-def sentences_mapper(tokenizer, max_length, pad_left: bool, pad_right: bool):
+def sentences_mapper(tokenizer, max_length):
     def mapping(item):
         caption = item['caption']
         ids = [tokenizer.get(word) for word in caption.split()]
         if pad_left:
-            ids = [1] + ids
+            pad_left_ids = [1] + ids
         if pad_right:
-            ids = ids + [2]
-        ids.extend([0] * (max_length - len(ids)))
-        item['input_ids'] = ids
+            pad_right_ids = ids + [2]
+        pad_left_ids.extend([0] * (max_length - len(pad_left_ids)))
+        pad_right_ids.extend([0] * (max_length - len(pad_right_ids)))
+        item['pad_left_ids'] = pad_left_ids
+        item['pad_right_ids'] = pad_right_ids
         return item
 
+def get_train_set
