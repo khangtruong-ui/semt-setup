@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 def get_data_json() -> dict[str, list[dict[str, str | int]]]:
-    fname = './02_NWPU_caption/dataset_nwpu.json'
+    fname = 'dataset_nwpu.json'
     with open(fname) as f:
         data = json.load(f)
     return data
