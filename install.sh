@@ -1,2 +1,2 @@
-pip install -q datasets
+pip install -q datasets einops
 
