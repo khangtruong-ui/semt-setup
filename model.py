@@ -2,6 +2,7 @@ import einops
 import jax
 import jax.numpy as jnp
 import flax.linen as nn
+import eqvision as eqv
 
 from config import *
 
@@ -83,6 +84,11 @@ class MultiheadStaticAttention(nn.Module):
         out1 = jnp.einsum('belh, blhd -> behd', eij, V)
         out2 = jnp.einsum('behd, belh -> blhd', out1, eij)
         out = self.norm(out2.reshape(batch, 1, length, dim))
+
+# ==================================== VISION MODELS =================================
+efficientnetb2 = eqv.models.classification.efficientnet_b2('https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b2_ra-bcdf34b7.pth')
+
+
 
 # ==================================== ENCODERS DECODERS =============================
 class MeshedEncoder(nn.Module):
