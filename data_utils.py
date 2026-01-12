@@ -39,6 +39,8 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
     return mapping
 
 def get_set(ds):
+    if not os.path.exists('tokenizer.json'):
+        construct_tokenizer(ds)
     tokenizer = load_tokenizer()
     sentence_map = sentence_mapper(tokenizer)
     mapped_ds = ds.map(sentence_map).batch(BATCH_SIZE, drop_last_batch=True)
