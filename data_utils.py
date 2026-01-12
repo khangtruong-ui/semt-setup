@@ -43,7 +43,7 @@ def get_set(ds):
         construct_tokenizer(ds)
     tokenizer = load_tokenizer()
     sentence_map = sentence_mapper(tokenizer)
-    mapped_ds = ds.map(sentence_map).batch(BATCH_SIZE, drop_last_batch=True)
+    mapped_ds = ds.map(sentence_map, load_from_cache=False).batch(BATCH_SIZE, load_from_cache=False, drop_last_batch=True)
     return mapped_ds
 
 def get_train_set():
