@@ -88,7 +88,11 @@ class MultiheadStaticAttention(nn.Module):
 # ==================================== VISION MODELS =================================
 efficientnetb2 = eqv.models.classification.efficientnet_b2('https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b2_ra-bcdf34b7.pth')
 
-
+class EfficientNetVision(nn.Module):
+    def __call__(self, x):
+        out = efficientnetb2.features(x, key=jax.random.key(0))
+        out = efficientnetb2.avgpool(x)
+        return out
 
 # ==================================== ENCODERS DECODERS =============================
 class MeshedEncoder(nn.Module):
