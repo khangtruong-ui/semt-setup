@@ -2,7 +2,7 @@ import einops
 import jax
 import jax.numpy as jnp
 import flax.linen as nn
-import eqvision as eqv
+import eqxvision as eqv
 
 from config import *
 
