@@ -59,8 +59,8 @@ class MultiheadAttention(nn.Module):
             out_features=TEXT_EMBEDDING_DIM,
         )
 
-    def __call__(self, q, k, v):
-        return self.attn(q, k, v)
+    def __call__(self, q, k, v, mask=None):
+        return self.attn(q, k, v, mask=mask)
 
 class MultiheadStaticAttention(nn.Module):
     def setup(self):
@@ -85,6 +85,15 @@ class MultiheadStaticAttention(nn.Module):
         out2 = jnp.einsum('behd, belh -> blhd', out1, eij)
         out = self.norm(out2.reshape(batch, 1, length, dim))
 
+# ==================================== SUPPORT CLASS =================================
+class SelfAttention(nn.Module):
+    @nn.compact
+    def __call__(self, inp):
+        length = inp.shape[-2]
+        mask = jnp.arange(length)[..., None] >= jnp.arange(length)[None, ...]
+        mask = jnp.broadcast_to(mask, (inp.shape[0], ATTENTION_HEAD, length, length))
+        return MultiheadAttention()(inp, inp, inp, mask=mask)
+
 # ==================================== VISION MODELS =================================
 efficientnetb2 = eqv.models.classification.efficientnet_b2('https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b2_ra-bcdf34b7.pth')
 
@@ -102,8 +111,48 @@ class EfficientNetVision(nn.Module):
 
 # ==================================== ENCODERS DECODERS =============================
 class MeshedEncoder(nn.Module):
-    pass
+    def setup(self):
+        self.m_attn = {
+            0: MultiheadMemorizedAttention,
+            2: MultiheadAttention,
+            3: MultiheadStaticAttention
+        }[ATTENTION_CHOICE]()
+        self.f = nn.Sequential([
+            nn.Dense(TEXT_EMBEDDING_DIM),
+            nn.activation.relu,
+            nn.Dense(TEXT_EMBEDDING_DIM),
+        ])
+        self.norm = nn.LayerNorm()
 
+    def __call__(self, inp):
+        z = self.norm(self.m_attn(inp, inp, inp) + inp)
+        x = self.norm(self.f(z) + z)
+        return x
+
+class MeshedDecoder(nn.Module):
+    def setup(self):
+        self.sa = SelfAttention()
+        self.ca = MultiheadAttention()
+        self.dense = nn.Dense(TEXT_EMBEDDING_DIM)
+        self.norm = nn.LayerNorm()
+        self.f = nn.Sequential([
+            nn.Dense(TEXT_EMBEDDING_DIM),
+            nn.activation.relu,
+            nn.Dense(TEXT_EMBEDDING_DIM)
+        ])
+
+    def __call__(self, inp):
+        src, tgts = inp
+        sa = self.norm(self.sa(src))
+        gated = jnp.zeros_like(sa)
+        for tgt in tgts:
+            c = self.norm(self.ca(sa, tgt, tgt) + sa)
+            alpha = self.dense(jnp.concatenate([sa, c], axis=-1))
+            alpha = jax.nn.sigmoid(alpha)
+            feed = alpha * c
+            gated += feed
+        f = self.norm(self.f(gated) + gated)
+        return self.norm(f)
 
 
 
