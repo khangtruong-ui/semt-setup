@@ -83,7 +83,10 @@ class MultiheadStaticAttention(nn.Module):
         out1 = jnp.einsum('belh, blhd -> behd', eij, V)
         out2 = jnp.einsum('behd, belh -> blhd', out1, eij)
         out = self.norm(out2.reshape(batch, 1, length, dim))
-        
+
+# ==================================== ENCODERS DECODERS =============================
+class MeshedEncoder(nn.Module):
+    pass
 
 
 
