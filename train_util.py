@@ -1,6 +1,8 @@
 import optax
 import jax
 import jax.numpy as jnp
+from jax.sharding import Mesh, NamedSharding, PartitionSpec as P
+
 from tqdm import tqdm
 from flax.training.train_state import TrainState
 from flax import serialization
