@@ -28,10 +28,8 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
     def mapping(item):
         caption = item['caption']
         ids = [tokenizer.get(word) for word in caption.split()]
-        if pad_left:
-            pad_left_ids = [1] + ids
-        if pad_right:
-            pad_right_ids = ids + [2]
+        pad_left_ids = [1] + ids
+        pad_right_ids = ids + [2]
         pad_left_ids.extend([0] * (max_length - len(pad_left_ids)))
         pad_right_ids.extend([0] * (max_length - len(pad_right_ids)))
         item['pad_left_ids'] = pad_left_ids
