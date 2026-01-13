@@ -65,7 +65,7 @@ def get_set(ds):
     mapped_ds = ds.map(sentence_map)
     
     loader = grain.DataLoader(
-        data_source=ds,
+        data_source=mapped_ds,
         sampler=sampler,
         operations=[grain.Batch(batch_size=BATCH_SIZE * jax.local_device_count(), drop_remainder=True)],
     )
