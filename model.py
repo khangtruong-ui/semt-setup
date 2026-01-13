@@ -123,9 +123,9 @@ class ShortVision(nn.Module):
         out = x
         dim = 24
         for _ in range(5):
-            out = nn.Conv(dim, 5)
-            out = nn.Conv(dim, 5)
-            out = nn.Conv(dim, 5, strides=(2, 2))
+            out = nn.Conv(dim, 5)(out)
+            out = nn.Conv(dim, 5)(out)
+            out = nn.Conv(dim, 5, strides=(2, 2))(out)
             dim *= 2
         return out
 
