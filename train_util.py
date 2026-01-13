@@ -52,7 +52,7 @@ def train_loop(model, train_state, ds, epoches):
     def train_epoch(epoch, train_state, ds):
         ds_length = 31500 * 4 // BATCH_SIZE // jax.local_device_count()
         iter_ds = iter(ds)
-        with tqdm(total=ds_length, desc=f"Epoch {f}") as pbar:
+        with tqdm(total=ds_length, desc=f"Epoch {epoch}") as pbar:
             running_loss = 0.
             for i, item in zip(range(ds_length), iter_ds):
                 image = jax.device_put(item['image'], sharding)
