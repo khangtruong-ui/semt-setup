@@ -6,11 +6,12 @@ from model import MeshedFastCaption
 from train_util import *
 from data_utils import get_train_set
 
+print('===== CRAFTING DATASETS =====')
+ds = get_train_set()
+
 print('====== CRAFTING MODELS ======')
 model = MeshedFastCaption()
 state = create_train_state(model)
 
-print('===== CRAFTING DATASETS =====')
-ds = get_train_set()
 print('===== TRAINING ======')
 state = train_loop(state, ds, 1)
