@@ -41,7 +41,7 @@ def get_set(ds):
         construct_tokenizer(ds)
     tokenizer = load_tokenizer()
     sentence_map = sentences_mapper(tokenizer)
-    mapped_ds = ds.map(sentence_map).batch(BATCH_SIZE, drop_last_batch=True)
+    mapped_ds = ds.map(sentence_map, num_proc=os.cpu_count()).batch(BATCH_SIZE, drop_last_batch=True, num_proc=os.cpu_count())
     return mapped_ds
 
 def get_train_set():
