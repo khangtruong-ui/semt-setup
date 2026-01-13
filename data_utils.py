@@ -3,6 +3,7 @@ import numpy as np
 import os
 from datasets import load_dataset, load_from_disk
 from PIL import Image
+import grain.python as grain
 
 from config import *
 
