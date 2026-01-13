@@ -240,7 +240,6 @@ class MeshedFastCaption(nn.Module):
     def __call__(self, inputs):
         img, txt = inputs
         img = self.vision(img)
-        print(img)
         img = self.adapt(img)
         img = img.reshape((img.shape[0], -1, img.shape[-1]))
         seq = self.embedding(txt)
