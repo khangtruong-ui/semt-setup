@@ -205,7 +205,7 @@ class NoMeshDecoder(nn.Module):
     def __call__(self, inp):
         src, tgt = inp
         sa = self.norm(self.sa(src))
-        
+        print(sa.shape, tgt.shape, src.shape)
         c = self.norm(self.ca(sa, tgt, tgt) + sa)
         f = self.norm(self.f(c) + c)
         return self.norm(f)
