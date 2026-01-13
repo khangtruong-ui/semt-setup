@@ -19,11 +19,11 @@ def create_train_state(model):
 def train_loop(model, train_state, ds, epoches):
 
     @jax.jit
-    def train_step(train_state, image, label):
+    def train_step(train_state, image, feed, label):
 
         @jax.value_and_grad
         def compute_loss(param):
-            logits = model.apply(param, image)
+            logits = state.apply(param, image, feed)
             loss = optax.losses.softmax_cross_entropy(logits, label)
             return loss
 
