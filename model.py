@@ -94,8 +94,10 @@ class SelfAttention(nn.Module):
         mask = jnp.arange(length)[..., None] >= jnp.arange(length)[None, ...]
         mask = mask[None, None, ...]
         mask = jnp.broadcast_to(mask, (inp.shape[0], ATTENTION_HEAD, length, length))
-        return MultiheadAttention()(inp, inp, inp, mask=mask)
-
+        minp = inp.reshape((-1, inp.shape[-2], inp.shape[-1]))
+        out = MultiheadAttention()(minp, minp, minp, mask=mask).reshape(minp.shape)
+        return out
+        
 # ==================================== VISION MODELS =================================
 """
 efficientnetb2 = eqv.models.classification.efficientnet_b2('https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b2_ra-bcdf34b7.pth')
@@ -125,9 +127,9 @@ class ShortVision(nn.Module):
         out = x
         dim = 24
         for _ in range(5):
-            out = nn.Conv(dim, 5)(out)
-            out = nn.Conv(dim, 5)(out)
-            out = nn.Conv(dim, 5, strides=2)(out)
+            out = nn.Conv(dim, (5, 5))(out)
+            out = nn.Conv(dim, (5, 5))(out)
+            out = nn.Conv(dim, (5, 5), strides=(2, 2))(out)
             dim *= 2
         return out
 
