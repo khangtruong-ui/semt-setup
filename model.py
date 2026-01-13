@@ -2,7 +2,7 @@ import einops
 import jax
 import jax.numpy as jnp
 import flax.linen as nn
-import eqxvision as eqv
+# import eqxvision as eqv
 
 from config import *
 
@@ -95,6 +95,7 @@ class SelfAttention(nn.Module):
         return MultiheadAttention()(inp, inp, inp, mask=mask)
 
 # ==================================== VISION MODELS =================================
+"""
 efficientnetb2 = eqv.models.classification.efficientnet_b2('https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b2_ra-bcdf34b7.pth')
 
 class EfficientNetVision(nn.Module):
@@ -107,6 +108,25 @@ class EfficientNetVision(nn.Module):
         x = self.preprocessing(x)
         out = efficientnetb2.features(x, key=jax.random.key(0))
         out = efficientnetb2.avgpool(x)
+        return out
+"""
+
+class ShortVision(nn.Module):
+    def preprocessing(self, x):
+        mean = jnp.array([0.485, 0.456, 0.406])
+        dev = jnp.array([0.229, 0.224, 0.225])
+        return (x - mean) / dev
+
+    @nn.compact
+    def __call__(self, x):
+        x = self.preprocessing(x)
+        out = x
+        dim = 24
+        for _ in range(5):
+            out = nn.Conv(dim, 5)
+            out = nn.Conv(dim, 5)
+            out = nn.Conv(dim, 5, strides=(2, 2))
+            dim *= 2
         return out
 
 # ==================================== ENCODERS DECODERS =============================
@@ -206,7 +226,8 @@ class MultiLayerNoMesh(nn.Module):
 class MeshedFastCaption(nn.Module):
     def setup(self):
         self.vision = {
-            3: EfficientNetVision
+            # 3: EfficientNetVision,
+            5: ShortVision
         }[BACKBONE_CHOICE]()
         self.decoder = {
             0: MultiLayerMeshed,
