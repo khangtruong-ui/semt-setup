@@ -44,7 +44,7 @@ def get_set(ds):
     if not os.path.exists('tokenizer.json'):
         construct_tokenizer(ds)
     tokenizer = load_tokenizer()
-    sentence_map = sentence_mapper(tokenizer)
+    sentence_map = sentences_mapper(tokenizer)
     mapped_ds = ds.map(sentence_map, load_from_cache=False).batch(BATCH_SIZE, load_from_cache=False, drop_last_batch=True)
     return mapped_ds
 
