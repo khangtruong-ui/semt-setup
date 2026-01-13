@@ -2,8 +2,6 @@ import json
 import numpy as np
 import os
 from datasets import load_dataset, load_from_disk
-from datasets import disable_caching
-disable_caching()
 
 from config import *
 
@@ -43,7 +41,7 @@ def get_set(ds):
         construct_tokenizer(ds)
     tokenizer = load_tokenizer()
     sentence_map = sentences_mapper(tokenizer)
-    mapped_ds = ds.map(sentence_map, load_from_cache_file=False).batch(BATCH_SIZE, drop_last_batch=True)
+    mapped_ds = ds.map(sentence_map).batch(BATCH_SIZE, drop_last_batch=True)
     return mapped_ds
 
 def get_train_set():
