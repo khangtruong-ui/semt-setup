@@ -193,7 +193,7 @@ class MultiLayerMeshed(nn.Module):
 class NoMeshDecoder(nn.Module):
     def setup(self):
         self.sa = SelfAttention()
-        self.ca = Attention()
+        self.ca = MultiheadAttention()
         self.norm = nn.LayerNorm()
         self.f = nn.Sequential([
             nn.Dense(TEXT_EMBEDDING_DIM),
