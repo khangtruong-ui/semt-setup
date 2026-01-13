@@ -2,6 +2,8 @@ import json
 import numpy as np
 import os
 from datasets import load_dataset, load_from_disk
+from datasets import disable_caching
+disable_caching()
 
 from config import *
 
