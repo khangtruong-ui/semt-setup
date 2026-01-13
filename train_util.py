@@ -36,8 +36,9 @@ def train_loop(model, train_state, ds, epoches):
             running_loss = 0.
             for i, item in enumerate(ds):
                 image = item['image']
-                caption = item['input_ids']
-                loss, train_state = train_step(train_state, image, caption)
+                pad_left = item['pad_left_ids']
+                pad_right = item['pad_right_ids']
+                loss, train_state = train_step(train_state, image, pad_left, pad_right)
                 pbar.update(1)
                 pbar.set_postfix({'loss': (running_loss * i + loss) / (i + 1)})
 
