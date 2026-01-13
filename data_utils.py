@@ -54,7 +54,7 @@ def get_set(ds):
             drop_remainder=True,
         ),
         shuffle=True,
-        seed=jax.random.key(0),
+        seed=42,
     )
     
     if not os.path.exists('tokenizer.json'):
