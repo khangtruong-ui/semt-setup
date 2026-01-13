@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import os
-from datasets import load_dataset
+from datasets import load_dataset, load_from_disk
 
 from config import *
 
@@ -47,10 +47,10 @@ def get_set(ds):
     return mapped_ds
 
 def get_train_set():
-    return get_set(load_dataset(os.environ['DATASET']).with_format('np')['train'])
+    return get_set(load_from_disk(os.environ['DATASET']).with_format('np')['train'])
 
 def get_test_set():
-    return get_set(load_dataset(os.environ['DATASET']).with_format('np')['test'])
+    return get_set(load_from_disk(os.environ['DATASET']).with_format('np')['test'])
 
 
 
