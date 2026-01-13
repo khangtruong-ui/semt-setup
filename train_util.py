@@ -7,6 +7,10 @@ from flax import serialization
 
 from config import *
 
+mesh = Mesh(np.array(jax.devices()), ('data',))
+sharding = NamedSharding(mesh, P('data'))
+non_sharding = no_sharding = NamedSharding(mesh, P())
+
 def save_checkpoint(params):
     target_bytes = serialization.to_bytes(params)
     with open('weights.msgpack', 'wb') as f:
@@ -18,7 +22,9 @@ def load_checkpoint():
 
 def create_train_state(model):
     imgs = jnp.zeros((BATCH_SIZE, 256, 256, 3))
+    imgs = jax.device_put(imgs, sharding)
     captions = jnp.zeros((BATCH_SIZE, NUM_CAPTIONS, INPUT_SEQ_LENGTH), dtype=jnp.int32)
+    captions = jax.device_put(captions, sharding)
     params = model.init(jax.random.key(0), (imgs, captions))
     tx = optax.adam(1e-4)
     train_state = TrainState.create(apply_fn=model.__call__, params=params, tx=tx)
