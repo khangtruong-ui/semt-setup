@@ -50,7 +50,7 @@ def train_loop(model, train_state, ds, epoches):
         return loss, new_state
 
     def train_epoch(epoch, train_state, ds):
-        with tqdm(total=len(ds), desc=f"Epoch {f}") as pbar:
+        with tqdm(total=len(ds) // BATCH_SIZE // jax.local_device_count(), desc=f"Epoch {f}") as pbar:
             running_loss = 0.
             for i, item in enumerate(ds):
                 image = jax.device_put(item['image'], sharding)
