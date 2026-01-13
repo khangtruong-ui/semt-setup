@@ -2,6 +2,7 @@ import json
 import numpy as np
 import os
 from datasets import load_dataset, load_from_disk
+from PIL import Image
 
 from config import *
 
@@ -32,17 +33,41 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
         pad_right_ids.extend([0] * (max_length - len(pad_right_ids)))
         item['pad_left_ids'] = pad_left_ids
         item['pad_right_ids'] = pad_right_ids
-        return item
+
+        new_dict = dict(
+            image=item['image'],
+            pad_left_ids=item['pad_left_ids'],
+            pad_right_ids=item['pad_right_ids']
+        )
+        return new_dict
 
     return mapping
 
 def get_set(ds):
+    sampler = grain.IndexSampler(
+        num_records=len(ds),
+        shard_options=grain.ShardOptions(
+            shard_index=jax.process_index(),
+            shard_count=jax.process_count(),
+            drop_remainder=True,
+        ),
+        shuffle=True,
+        seed=config.seed,
+    )
+    
     if not os.path.exists('tokenizer.json'):
         construct_tokenizer(ds)
     tokenizer = load_tokenizer()
     sentence_map = sentences_mapper(tokenizer)
-    mapped_ds = ds.map(sentence_map, num_proc=os.cpu_count()).batch(BATCH_SIZE, drop_last_batch=True, num_proc=os.cpu_count())
-    return mapped_ds
+    ds = grain.MapDataset.source(ds)
+    mapped_ds = ds.map(sentence_map)
+    
+    loader = grain.DataLoader(
+        data_source=ds,
+        sampler=sampler,
+        operations=[grain.Batch(batch_size=BATCH_SIZE * jax.local_device_count(), drop_remainder=True)],
+    )
+    return loader
 
 def get_train_set():
     return get_set(load_from_disk(os.environ['DATASET']).with_format('np'))
