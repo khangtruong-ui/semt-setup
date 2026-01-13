@@ -238,7 +238,7 @@ class MeshedFastCaption(nn.Module):
             2: MultiLayerNoMesh,
         }[DECODER_ATTENTION_CHOICE]()
         self.adapt = nn.Dense(TEXT_EMBEDDING_DIM)
-        self.dense = nn.Dense(TEXT_EMBEDDING_DIM)
+        self.dense = nn.Dense(VOCAB_SIZE)
         self.embedding = SeqEmbedding()
 
     def __call__(self, inputs):
