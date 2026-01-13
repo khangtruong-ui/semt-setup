@@ -92,6 +92,7 @@ class SelfAttention(nn.Module):
     def __call__(self, inp):
         length = inp.shape[-2]
         mask = jnp.arange(length)[..., None] >= jnp.arange(length)[None, ...]
+        mask = mask[None, None, ...]
         mask = jnp.broadcast_to(mask, (inp.shape[0], ATTENTION_HEAD, length, length))
         return MultiheadAttention()(inp, inp, inp, mask=mask)
 
@@ -204,7 +205,7 @@ class NoMeshDecoder(nn.Module):
     def __call__(self, inp):
         src, tgt = inp
         sa = self.norm(self.sa(src))
-        print(sa.shape, tgt.shape)
+        
         c = self.norm(self.ca(sa, tgt, tgt) + sa)
         f = self.norm(self.f(c) + c)
         return self.norm(f)
