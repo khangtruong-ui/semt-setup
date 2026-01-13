@@ -24,7 +24,7 @@ def load_checkpoint():
         return serialization.from_bytes(f.read())
 
 def create_train_state(model):
-    imgs = jnp.zeros((BATCH_SIZE, 256, 256, 3))
+    imgs = jnp.zeros((BATCH_SIZE * jax.local_device_count(), 256, 256, 3))
     imgs = jax.device_put(imgs, sharding)
     captions = jnp.zeros((BATCH_SIZE, NUM_CAPTIONS, INPUT_SEQ_LENGTH), dtype=jnp.int32)
     captions = jax.device_put(captions, sharding)
