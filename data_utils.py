@@ -4,6 +4,7 @@ import os
 from datasets import load_dataset, load_from_disk
 from PIL import Image
 import grain.python as grain
+import jax
 
 from config import *
 
