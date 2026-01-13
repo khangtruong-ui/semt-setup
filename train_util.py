@@ -48,7 +48,7 @@ def train_loop(model, train_state, ds, epoches):
             return loss.sum() / loss.shape[0]
 
         loss, grad = compute_loss(train_state.params)
-        new_state = train_state.apply_gradients(grad)
+        new_state = train_state.apply_gradients(grads=grad)
         return loss, new_state
 
     def train_epoch(epoch, train_state, ds):
