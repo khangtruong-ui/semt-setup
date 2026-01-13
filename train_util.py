@@ -3,9 +3,18 @@ import jax
 import jax.numpy as jnp
 from tqdm import tqdm
 from flax.training import TrainState
+from flax import serialization
 
 from config import *
 
+def save_checkpoint(params):
+    target_bytes = serialization.to_bytes(params)
+    with open('weights.msgpack', 'wb') as f:
+        f.write(target_bytes)
+
+def load_checkpoint():
+    with open('weights.msgpack', 'rb') as f:
+        return serialization.from_bytes(f.read())
 
 def create_train_state(model):
     imgs = jnp.zeros((BATCH_SIZE, 256, 256, 3))
@@ -46,10 +55,7 @@ def train_loop(model, train_state, ds, epoches):
 
     for epoch in range(epoches):
         train_state = train_epoch(epoch, train_state, ds)
+        if epoch % 1 == 0:
+            save_checkpoint(train_state.params)
 
     return train_state
-
-
-
-
-
