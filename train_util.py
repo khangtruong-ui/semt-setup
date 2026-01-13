@@ -2,7 +2,7 @@ import optax
 import jax
 import jax.numpy as jnp
 from tqdm import tqdm
-from flax.training import TrainState
+from flax.training.train_state import TrainState
 from flax import serialization
 
 from config import *
