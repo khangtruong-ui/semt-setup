@@ -2,11 +2,12 @@ import optax
 import jax
 import jax.numpy as jnp
 from jax.sharding import Mesh, NamedSharding, PartitionSpec as P
-
 import numpy as np
 from tqdm import tqdm
 from flax.training.train_state import TrainState
 from flax import serialization
+
+from concurrent.futures import ThreadPoolExecutor
 
 from config import *
 
@@ -14,9 +15,9 @@ mesh = Mesh(np.array(jax.devices()), ('data',))
 sharding = NamedSharding(mesh, P('data'))
 non_sharding = no_sharding = NamedSharding(mesh, P())
 
-def save_checkpoint(params):
+def save_checkpoint(params, i):
     target_bytes = serialization.to_bytes(params)
-    with open('weights.msgpack', 'wb') as f:
+    with open(f'weights-{i:04d}.msgpack', 'wb') as f:
         f.write(target_bytes)
 
 def load_checkpoint():
@@ -66,9 +67,9 @@ def train_loop(model, train_state, ds, epoches):
 
         return train_state
 
-    for epoch in range(epoches):
-        train_state = train_epoch(epoch, train_state, ds)
-        if epoch % 1 == 0:
-            save_checkpoint(train_state.params)
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        for epoch in range(epoches):
+            train_state = train_epoch(epoch, train_state, ds)
+            executor.submit(save_checkpoint, train_state.params, i)
 
     return train_state
