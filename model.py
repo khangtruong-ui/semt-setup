@@ -154,7 +154,110 @@ class MeshedDecoder(nn.Module):
         f = self.norm(self.f(gated) + gated)
         return self.norm(f)
 
+class MultiLayerMeshed(nn.Module):
+    def setup(self):
+        self.enc = [MeshedEncoder() for _ in range(MESHED_DEPTH)]
+        self.dec = [MeshedDecoder() for _ in range(MESHED_DEPTH)]
 
+    def __call__(self, inp):
+        src, tgt = inp
+        srclst = [tgt]
+        for block in self.enc:
+            srclst.append(block(srclst[-1]))
+        out = src
+        for dec in self.dec:
+            out = dec((out, srclst))
+        return out
 
+class NoMeshDecoder(nn.Module):
+    def setup(self):
+        self.sa = SelfAttention()
+        self.ca = Attention()
+        self.norm = nn.LayerNorm()
+        self.f = nn.Sequential([
+            nn.Dense(TEXT_EMBEDDING_DIM),
+            nn.activation.relu,
+            nn.Dense(TEXT_EMBEDDING_DIM)
+        ])
 
+    def __call__(self, inp):
+        src, tgt = inp
+        sa = self.norm(self.sa(src))
+        c = self.norm(self.ca(sa, tgt, tgt) + sa)
+        f = self.norm(self.f(c) + c)
+        return self.norm(f)
+
+class MultiLayerNoMesh(nn.Module):
+    def setup(self):
+        self.enc = [MeshedEncoder() for _ in range(MESHED_DEPTH)]
+        self.dec = [NoMeshDecoder() for _ in range(MESHED_DEPTH)]
+
+    def __call__(self, inp):
+        txt, img = inp
+        for block in self.enc:
+            img = block(img)
+        x = txt
+        for dec in self.dec:
+            x = dec((x, img))
+        return x
+
+# ================================= MAIN MODULE =================================
+
+class MeshedFastCaption(nn.Module):
+    def setup(self):
+        self.vision = {
+            3: EfficientNetVision
+        }[BACKBONE_CHOICE]()
+        self.decoder = {
+            0: MultiLayerMeshed,
+            2: MultiLayerNoMesh,
+        }[DECODER_ATTENTION_CHOICE]()
+        self.adapt = nn.Dense(TEXT_EMBEDDING_DIM)
+        self.dense = nn.Sequential([
+            nn.Dense(TEXT_EMBEDDING_DIM)
+            jax.nn.softmax
+        ])
+        self.embedding = SeqEmbedding()
+
+    def __call__(self, inputs):
+        img, txt = inputs
+        img = self.vision(img)
+        img = self.adapt(img)
+        img = img.reshape((img.shape[0], -1, img.shape[-1]))
+        seq = self.embedding(txt)
+        out = self.decoder((seq, img[:, None, ...]))
+        return self.dense(out)
+
+    def _batch_generate_from_index(self, imgs, txt, index):
+
+        def cond(inp):
+            index, txt = inp
+            cond1 = index <= txt.shape[2]
+            unfinished_lines = (txt != 2).all(axis=-1)
+            cond2 = unfinished_lines.any()
+            return cond1 & cond2
+        
+        def loop(inp):
+            index, txt = inp
+            finished_lines = jnp.any(txt == 2, axis=-1)
+            seq = self.embedding(txt)
+            out = self.decoder((seq, imgs[:, None]))
+            prob = self.dense(out)
+            new_text = jnp.argmax(prob, axis=-1)
+            valid = jnp.astype(jnp.arange(txt.shape[2]) <= index, jnp.int32)
+            new_text = new_text * valid
+            proposed_txt = jnp.concatenate([jnp.ones((new_text.shape[0], 1, 1), dtype=jnp.int32), new_text[..., :-1]], axis=-1)
+            txt = jnp.where(finished_lines[..., None], txt, proposed_txt)
+            index = index + 1
+            return index, txt
+
+        return jax.lax.while_loop(cond, loop, (0, txt))
+
+    def batch_generate_caption(self, imgs):
+        imgs = self.vision(imgs)
+        imgs = self.adapt(imgs)
+        imgs = imgs.reshape((imgs.shape[0], -1, imgs.shape[-1]))
+        txt = jnp.zeros((imgs.shape[0], 1, INPUT_SEQ_LENGTH), dtype=jnp.int32)
+        out = self._batch_generate_from_index(imgs, txt, 0)
+        return out
 
