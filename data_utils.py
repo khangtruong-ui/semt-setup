@@ -33,8 +33,8 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
         pad_right_ids = ids + [2]
         pad_left_ids.extend([0] * (max_length - len(pad_left_ids)))
         pad_right_ids.extend([0] * (max_length - len(pad_right_ids)))
-        item['pad_left_ids'] = pad_left_ids
-        item['pad_right_ids'] = pad_right_ids
+        item['pad_left_ids'] = np.array(pad_left_ids)
+        item['pad_right_ids'] = np.array(pad_right_ids)
 
         new_dict = dict(
             image=item['image'],
