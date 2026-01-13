@@ -42,7 +42,8 @@ def train_loop(model, train_state, ds, epoches):
         @jax.value_and_grad
         def compute_loss(param):
             logits = model.apply(param, (image, feed))
-            loss = optax.losses.softmax_cross_entropy(logits, label)
+            onehot_label = jax.nn.one_hot(label, VOCAB_SIZE)
+            loss = optax.losses.softmax_cross_entropy(logits, onehot_label)
             return loss
 
         loss, grad = compute_loss(train_state.params)
