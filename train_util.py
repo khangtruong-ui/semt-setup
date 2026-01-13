@@ -53,9 +53,9 @@ def train_loop(model, train_state, ds, epoches):
         with tqdm(total=len(ds), desc=f"Epoch {f}") as pbar:
             running_loss = 0.
             for i, item in enumerate(ds):
-                image = item['image']
-                pad_left = item['pad_left_ids']
-                pad_right = item['pad_right_ids']
+                image = jax.device_put(item['image'], sharding)
+                pad_left = jax.device_put(item['pad_left_ids'], sharding)
+                pad_right = jax.device_put(item['pad_right_ids'], sharding)
                 loss, train_state = train_step(train_state, image, pad_left, pad_right)
                 pbar.update(1)
                 pbar.set_postfix({'loss': (running_loss * i + loss) / (i + 1)})
