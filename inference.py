@@ -6,6 +6,7 @@ import numpy as np
 from tqdm import tqdm
 from flax import serialization
 import glob
+import json
 
 from data_utils import get_train_set, load_tokenizer
 from model import MeshedFastCaption
@@ -44,6 +45,12 @@ def inference(model, weights):
         print(out_sentence)
         ret_dict.append(out_sentence)
         res_dict.append(out_caption)
+
+    with open('predict.json', 'w') as f:
+        json.dump(ret_dict, f)
+
+    with open('label.json', 'w') as f:
+        json.dump(res_dict, f)
         
 def main():
     model = MeshedFastCaption()
