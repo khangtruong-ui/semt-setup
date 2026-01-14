@@ -7,7 +7,7 @@ from tqdm import tqdm
 from flax import serialization
 import glob
 
-from data_utils import get_train_set
+from data_utils import get_train_set, load_tokenizer
 
 
 def load_checkpoint():
@@ -15,11 +15,23 @@ def load_checkpoint():
     with open('weights.msgpack', 'rb') as f:
         return serialization.from_bytes(f.read())
 
+def reverse_tensor(tens):
+    tokenizer = load_tokenizer()
+    for pred in tens:
+        cap_int = pred[0]
+        cap_int = 
+
 def inference(model, weights):
     test_set = get_train_set()
-    for _, batch in zip(range(100), test_set):
+
+    @jax.jit
+    def loop_body(batch):
         image = batch['image']
         out = model.apply(weights, image, method=model.batch_generate_caption)
+        return out
+
+    for _, batch in zip(range(100), test_set):
+        out = loop_body(batch)
         
 
 
