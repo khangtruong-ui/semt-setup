@@ -23,7 +23,7 @@ def load_checkpoint():
     model = MeshedFastCaption()
     state = create_train_state(model)
     with open(fname, 'rb') as f:
-        return serialization.from_bytes(state, f.read())
+        return serialization.from_bytes(state.params, f.read())
 
 def reverse_tensor(tens):
     tokenizer = load_tokenizer()
