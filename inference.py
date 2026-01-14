@@ -10,6 +10,7 @@ import json
 
 from data_utils import get_train_set, load_tokenizer
 from model import MeshedFastCaption
+from train_util import create_train_state
 
 mesh = Mesh(np.array(jax.devices()), ('data',))
 sharding = NamedSharding(mesh, P('data'))
@@ -18,8 +19,11 @@ non_sharding = no_sharding = NamedSharding(mesh, P())
 
 def load_checkpoint():
     fname = sorted(glob.glob('*.msgpack'))[-1]
+    print('====== CRAFTING MODELS ======')
+    model = MeshedFastCaption()
+    state = create_train_state(model)
     with open(fname, 'rb') as f:
-        return serialization.from_bytes(f.read())
+        return serialization.from_bytes(state, f.read())
 
 def reverse_tensor(tens):
     tokenizer = load_tokenizer()
@@ -59,6 +63,7 @@ def inference(model, weights):
 def main():
     model = MeshedFastCaption()
     weights = load_checkpoint()
+    print('===== INFERENCING =====')
     inference(model, weights)
 
 if __name__ == '__main__':
