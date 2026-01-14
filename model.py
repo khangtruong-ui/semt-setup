@@ -255,7 +255,7 @@ class MeshedFastCaption(nn.Module):
 
         def cond(inp):
             index, txt = inp
-            cond1 = index <= txt.shape[2]
+            cond1 = index < txt.shape[2]
             unfinished_lines = (txt != 2).all(axis=-1)
             cond2 = unfinished_lines.any()
             return cond1 & cond2
