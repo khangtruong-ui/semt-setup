@@ -30,7 +30,7 @@ def reverse_tensor(tens):
     
     def mapper(cap_int):
         assert cap_int.ndim == 1, f"cap_int shape: {cap_int.shape}"
-        return ' '.join(tokenizer[token.numpy()] for token in cap_int).strip().replace('[END] [END]', '[END]')
+        return ' '.join(tokenizer[int(token)] for token in cap_int).strip().replace('[END] [END]', '[END]')
 
     collected = np.array([[mapper(cap) for cap in cap_per_batch] for cap_per_batch in tens]).reshape(tens.shape[:-1])
     return collected
