@@ -18,7 +18,7 @@ non_sharding = no_sharding = NamedSharding(mesh, P())
 
 def load_checkpoint():
     fname = sorted(glob.glob('*.msgpack'))[-1]
-    with open('weights.msgpack', 'rb') as f:
+    with open(fname, 'rb') as f:
         return serialization.from_bytes(f.read())
 
 def reverse_tensor(tens):
