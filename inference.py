@@ -19,7 +19,8 @@ def inference(model, weights):
     test_set = get_train_set()
     for _, batch in zip(range(100), test_set):
         image = batch['image']
-        out = model.apply(weights, model.batch_generate_caption)
+        out = model.apply(weights, image, method=model.batch_generate_caption)
+        
 
 
 
