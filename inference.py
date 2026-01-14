@@ -8,6 +8,7 @@ from flax import serialization
 import glob
 
 from data_utils import get_train_set, load_tokenizer
+from model import MeshedFastCaption
 
 
 def load_checkpoint():
@@ -33,11 +34,24 @@ def inference(model, weights):
         out = model.apply(weights, image, method=model.batch_generate_caption)
         return out
 
+    ret_dict = []
+    res_dict = []
     for _, batch in zip(range(100), test_set):
         out = loop_body(batch)
         out_sentence = reverse_tensor(out)
         out_caption = reverse_tensor(batch['pad_right_ids'])
+        print(out_caption)
+        print(out_sentence)
+        ret_dict.append(out_sentence)
+        res_dict.append(out_caption)
         
+def main():
+    model = MeshedFastCaption()
+    weights = load_checkpoint()
+    inference(model, weights)
+
+if __name__ == '__main__':
+    main()
 
 
 
