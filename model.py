@@ -258,7 +258,7 @@ class MeshedFastCaption(nn.Module):
             cond1 = index < txt.shape[2]
             unfinished_lines = (txt != 2).all(axis=-1)
             cond2 = unfinished_lines.any()
-            jax.debug.print("{}, {}, {}", cond1, cond2, unfinished_lines)
+            # jax.debug.print("{}, {}, {}", cond1, cond2, unfinished_lines)
             return cond1 & cond2
         
         def loop(inp):
