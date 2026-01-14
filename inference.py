@@ -19,7 +19,7 @@ def reverse_tensor(tens):
     tokenizer = load_tokenizer()
     
     def mapper(cap_int):
-        s = ' '.join(tokenizer[token] for token in cap_int).strip()
+        return ' '.join(tokenizer[token] for token in cap_int).strip()
 
     collected = np.array([[mapper(cap) for cap in cap_per_batch] for cap_per_batch in tens]).reshape(tens.shape[:-1])
     return collected
