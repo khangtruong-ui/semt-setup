@@ -20,10 +20,6 @@ def save_checkpoint(params, i):
     with open(f'weights-{i:04d}.msgpack', 'wb') as f:
         f.write(target_bytes)
 
-def load_checkpoint():
-    with open('weights.msgpack', 'rb') as f:
-        return serialization.from_bytes(f.read())
-
 def create_train_state(model):
     imgs = jnp.zeros((BATCH_SIZE * jax.local_device_count(), 256, 256, 3))
     imgs = jax.device_put(imgs, sharding)
