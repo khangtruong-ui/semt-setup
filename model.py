@@ -274,7 +274,7 @@ class MeshedFastCaption(nn.Module):
             index = index + 1
             return index, txt
 
-        return jax.lax.while_loop(cond, loop, (0, txt))
+        return jax.lax.while_loop(cond, loop, (0, txt))[1]
 
     def batch_generate_caption(self, imgs):
         imgs = self.vision(imgs)
