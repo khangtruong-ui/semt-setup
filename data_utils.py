@@ -36,12 +36,7 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
         item['pad_left_ids'] = np.repeat(np.array(pad_left_ids)[None, ...], NUM_CAPTIONS, axis=0)
         item['pad_right_ids'] = np.repeat(np.array(pad_right_ids)[None, ...], NUM_CAPTIONS, axis=0)
 
-        new_dict = dict(
-            image=item['image'],
-            pad_left_ids=item['pad_left_ids'],
-            pad_right_ids=item['pad_right_ids']
-        )
-        return new_dict
+        return item
 
     return mapping
 
