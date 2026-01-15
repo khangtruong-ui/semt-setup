@@ -54,6 +54,7 @@ def train_loop(model, train_state, ds, epoches):
         with tqdm(total=ds_length, desc=f"Epoch {epoch}") as pbar:
             running_loss = 0.
             for i, item in zip(range(ds_length), iter_ds):
+                item = jax.tree.map(np.array, item)
                 image = jax.device_put(item['image'], sharding)
                 pad_left = jax.device_put(item['pad_left_ids'], sharding)
                 pad_right = jax.device_put(item['pad_right_ids'], sharding)
