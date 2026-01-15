@@ -63,8 +63,6 @@ def get_set(ds):
         data_source=mapped_ds,
         sampler=sampler,
         operations=[grain.Batch(batch_size=BATCH_SIZE * jax.local_device_count(), drop_remainder=True)],
-        worker_count=1,
-        worker_buffer_size=128
     )
     return loader
 
