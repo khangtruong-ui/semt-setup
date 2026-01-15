@@ -60,7 +60,10 @@ class TorchDataset(Dataset):
             pad_left_ids=mapped['pad_left_ids'],
             pad_right_ids=mapped['pad_right_ids']
         )
-        return jax.tree.map(lambda x: np.array(x), ret)
+        output = jax.tree.map(lambda x: np.array(x), ret)
+        assert jax.tree.all(jax.tree.map(lambda x: x.dtype != np.dtype(object), output)), f"Type: {jax.tree.map(lambda x: x.dtype, output)}"
+        
+        return output
 
 def get_set(ds):
     sampler = grain.IndexSampler(
