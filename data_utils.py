@@ -48,10 +48,10 @@ class TorchDataset(Dataset):
         self.mapper = mapper
 
     def __len__(self):
-        return len(self.ds)
+        return len(self.ds) * 10000
 
     def __getitem__(self, i):
-        item = self.ds[i]
+        item = self.ds[i % len(self.ds)]
         mapped = self.mapper(item)
         ret = dict(
             image=mapped['image'],
