@@ -1,3 +1,5 @@
+print('===== TRAINING SCRIPT =====')
+
 import os
 
 from model import MeshedFastCaption
