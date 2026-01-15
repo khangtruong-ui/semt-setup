@@ -118,6 +118,7 @@ class EfficientNetVision(nn.Module):
 class ShortVision(nn.Module):
     def preprocessing(self, x):
         x = jax.image.resize(x, (x.shape[0], 256, 256, 3), 'bicubic')
+        x /= 255.
         mean = jnp.array([0.485, 0.456, 0.406])
         dev = jnp.array([0.229, 0.224, 0.225])
         return (x - mean) / dev
