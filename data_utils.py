@@ -67,7 +67,7 @@ def get_set(ds):
     return loader
 
 def get_train_set():
-    return get_set(load_from_disk(os.environ['DATASET']).with_format('np'))
+    return get_set(load_dataset(os.environ['DATASET']).with_format('np'))
 
 
 
