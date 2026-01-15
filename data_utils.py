@@ -6,6 +6,7 @@ from PIL import Image
 import grain.python as grain
 import jax
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
 
 from config import *
 
@@ -65,9 +66,17 @@ def get_set(ds):
         sampler=sampler,
         operations=[grain.Batch(batch_size=BATCH_SIZE * jax.local_device_count(), drop_remainder=True)],
     )
+    torch_sampler = DistributedSampler(
+        dataset=mapped_ds,
+        num_replicas=jax.process_count(),   # == num_programs
+        rank=jax.process_index(),                 # == program_index
+        shuffle=True,
+        drop_last=True
+    )
+
     torch_loader = DataLoader(mapped_ds, 
                               batch_size=BATCH_SIZE * jax.local_device_count(),
-                              sampler=sampler,
+                              sampler=torch_sampler,
                               drop_last=True,
                               num_workers=os.cpu_count() // 2
                              )
