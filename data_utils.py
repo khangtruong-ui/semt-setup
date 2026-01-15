@@ -42,6 +42,23 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
 
     return mapping
 
+class TorchDataset(Dataset):
+    def __init__(self, ds, mapper):
+        self.ds = ds
+        self.mapper = mapper
+
+    def __len__(self):
+        return len(self.ds)
+
+    def __getitem__(self, i):
+        item = self.ds[i]
+        mapped = self.mapper(item)
+        return dict(
+            image=np.array(mapped['image']),
+            pad_left_ids=np.array(mapped['pad_left_ids'])
+            pad_right_ids=np.array(mapped['pad_right_ids'])
+        )
+
 def get_set(ds):
     sampler = grain.IndexSampler(
         num_records=len(ds),
@@ -58,8 +75,9 @@ def get_set(ds):
         construct_tokenizer(ds)
     tokenizer = load_tokenizer()
     sentence_map = sentences_mapper(tokenizer)
-    ds = grain.MapDataset.source(ds)
-    mapped_ds = ds.map(sentence_map).map(lambda x: jax.tree.map(np.array, x))
+    # ds = grain.MapDataset.source(ds)
+    # mapped_ds = ds.map(sentence_map).map(lambda x: jax.tree.map(np.array, x))
+    mapped_ds = TorchDataset(ds, sentence_map)
     
     loader = grain.DataLoader(
         data_source=mapped_ds,
