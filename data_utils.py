@@ -55,7 +55,7 @@ class TorchDataset(Dataset):
         mapped = self.mapper(item)
         return dict(
             image=np.array(mapped['image']),
-            pad_left_ids=np.array(mapped['pad_left_ids'])
+            pad_left_ids=np.array(mapped['pad_left_ids']),
             pad_right_ids=np.array(mapped['pad_right_ids'])
         )
 
