@@ -64,7 +64,7 @@ def train_loop(model, train_state, ds, epoches):
         return train_state
 
     iter_ds = iter(ds)
-    with ThreadPoolExecutor(max_workers=2) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         for epoch in range(epoches):
             train_state = train_epoch(epoch, train_state, iter_ds)
             if (epoch + 1) % 5 == 0:
