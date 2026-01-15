@@ -29,7 +29,8 @@ def load_tokenizer():
 
 def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
     def mapping(item):
-        caption = item['caption']
+        key = 'caption' if 'caption' in item else 'raw'
+        caption = item[key]
         ids = [tokenizer.get(word) for word in caption.split()]
         pad_left_ids = [1] + ids
         pad_right_ids = ids + [2]
