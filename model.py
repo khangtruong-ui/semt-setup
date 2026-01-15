@@ -128,7 +128,7 @@ class ShortVision(nn.Module):
         out = x
         out = nn.Conv(32, (2, 2), strides=(2, 2))(out)
         out = nn.Conv(64, (2, 2), strides=(2, 2))(out)
-        out = nn.Conv(TEXT_EMBEDDING_DIM, (4, 4), strides=(2, 2))(out)
+        out = nn.Conv(TEXT_EMBEDDING_DIM, (2, 2), strides=(2, 2))(out)
         return out
 
 # ==================================== ENCODERS DECODERS =============================
