@@ -14,7 +14,8 @@ from config import *
 def construct_tokenizer(ds):
     wordset = set()
     for item in ds:
-        caption = item['caption']
+        key = 'caption' if 'caption' in item else 'raw'
+        caption = item[key]
         wordset.update(caption.lower().split())
 
     wordlist = ['', '[BEGIN]', '[END]'] + sorted(list(wordset))
