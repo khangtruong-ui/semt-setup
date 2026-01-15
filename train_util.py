@@ -66,6 +66,7 @@ def train_loop(model, train_state, ds, epoches):
 
     for epoch in range(epoches):
         train_state = train_epoch(epoch, train_state, ds)
-        save_checkpoint(train_state.params, epoch)
+        if (epoch + 1) % 50 == 0:
+            save_checkpoint(train_state.params, epoch)
 
     return train_state
