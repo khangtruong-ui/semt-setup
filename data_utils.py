@@ -32,7 +32,7 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
     def mapping(item):
         key = 'caption' if 'caption' in item else 'raw'
         caption = item[key]
-        ids = [tokenizer.get(word) for word in caption.lower().split()]
+        ids = [tokenizer[word] for word in caption.lower().split()]
         pad_left_ids = [1] + ids
         pad_right_ids = ids + [2]
         pad_left_ids.extend([0] * (max_length - len(pad_left_ids)))
