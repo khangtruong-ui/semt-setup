@@ -5,7 +5,7 @@ from datasets import load_dataset, load_from_disk
 from PIL import Image
 import grain.python as grain
 import jax
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.distributed import DistributedSampler
 
 from config import *
@@ -58,7 +58,8 @@ def get_set(ds):
         construct_tokenizer(ds)
     tokenizer = load_tokenizer()
     sentence_map = sentences_mapper(tokenizer)
-    ds = grain.MapDataset.source(ds)
+    # ds = grain.MapDataset.source(ds)
+    ds = Dataset(ds)
     mapped_ds = ds.map(sentence_map)
     
     loader = grain.DataLoader(
