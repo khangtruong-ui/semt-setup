@@ -15,7 +15,7 @@ def construct_tokenizer(ds):
     wordset = set()
     for item in ds:
         caption = item['caption']
-        wordset.update(caption.split())
+        wordset.update(caption.lower().split())
 
     wordlist = ['', '[BEGIN]', '[END]'] + sorted(list(wordset))
     tokenizer = {word: i for i, word in enumerate(wordlist)}
@@ -31,7 +31,7 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
     def mapping(item):
         key = 'caption' if 'caption' in item else 'raw'
         caption = item[key]
-        ids = [tokenizer.get(word) for word in caption.split()]
+        ids = [tokenizer.get(word) for word in caption.lower().split()]
         pad_left_ids = [1] + ids
         pad_right_ids = ids + [2]
         pad_left_ids.extend([0] * (max_length - len(pad_left_ids)))
