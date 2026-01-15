@@ -50,10 +50,9 @@ def train_loop(model, train_state, ds, epoches):
 
     def train_epoch(epoch, train_state, ds):
         ds_length = 31500 * 4 // BATCH_SIZE // jax.local_device_count()
-        iter_ds = iter(ds)
         with tqdm(total=ds_length, desc=f"Epoch {epoch}") as pbar:
             running_loss = 0.
-            for i, item in zip(range(ds_length), iter_ds):
+            for i, item in zip(range(ds_length), ds):
                 item = jax.tree.map(np.array, item)
                 image = jax.device_put(item['image'], sharding)
                 pad_left = jax.device_put(item['pad_left_ids'], sharding)
@@ -64,8 +63,9 @@ def train_loop(model, train_state, ds, epoches):
 
         return train_state
 
+    iter_ds = iter(ds)
     for epoch in range(epoches):
-        train_state = train_epoch(epoch, train_state, ds)
+        train_state = train_epoch(epoch, train_state, iter_ds)
         if (epoch + 1) % 50 == 0:
             save_checkpoint(train_state.params, epoch)
 
