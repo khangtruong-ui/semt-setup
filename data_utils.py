@@ -96,7 +96,7 @@ def get_set(ds):
                               batch_size=BATCH_SIZE * jax.local_device_count(),
                               sampler=torch_sampler,
                               drop_last=True,
-                              num_workers=os.cpu_count() // 2
+                              num_workers=os.cpu_count() * 3 // 4
                              )
     return torch_loader
 
