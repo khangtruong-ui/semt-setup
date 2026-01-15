@@ -47,6 +47,7 @@ def inference(model, weights):
     ret_dict = []
     res_dict = []
     for _, batch in zip(range(1), test_set):
+        batch = jax.tree.map(np.array, batch)
         image = jax.device_put(batch['image'], sharding)
         out = loop_body(image)
         out_sentence = reverse_tensor(out)
