@@ -69,7 +69,7 @@ def get_set(ds):
     tokenizer = load_tokenizer()
     sentence_map = sentences_mapper(tokenizer)
     # ds = grain.MapDataset.source(ds)
-    # ds = Dataset(ds)
+    ds = TorchDataset(ds)
     mapped_ds = ds.map(sentence_map)
     
     loader = grain.DataLoader(
