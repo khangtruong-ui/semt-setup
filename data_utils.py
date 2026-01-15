@@ -71,7 +71,6 @@ def get_set(ds):
         num_replicas=jax.process_count(),   # == num_programs
         rank=jax.process_index(),                 # == program_index
         shuffle=True,
-        drop_last=True
     )
 
     torch_loader = DataLoader(mapped_ds, 
