@@ -53,11 +53,12 @@ class TorchDataset(Dataset):
     def __getitem__(self, i):
         item = self.ds[i]
         mapped = self.mapper(item)
-        return dict(
-            image=np.array(mapped['image']),
-            pad_left_ids=np.array(mapped['pad_left_ids']),
-            pad_right_ids=np.array(mapped['pad_right_ids'])
+        ret = dict(
+            image=mapped['image'],
+            pad_left_ids=mapped['pad_left_ids'],
+            pad_right_ids=mapped['pad_right_ids']
         )
+        return jax.tree.map(lambda x: np.array(x).astype(np.int32))
 
 def get_set(ds):
     sampler = grain.IndexSampler(
