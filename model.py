@@ -126,12 +126,8 @@ class ShortVision(nn.Module):
     def __call__(self, x):
         x = self.preprocessing(x)
         out = x
-        dim = 24
-        for _ in range(5):
-            out = nn.Conv(dim, (5, 5))(out)
-            out = nn.Conv(dim, (5, 5))(out)
-            out = nn.Conv(dim, (5, 5), strides=(2, 2))(out)
-            dim *= 2
+        out = nn.Conv(dim, (8, 8), strides=(4, 4))(out)
+        out = nn.Conv(dim, (2, 2), strides=(2, 2))(out)
         return out
 
 # ==================================== ENCODERS DECODERS =============================
