@@ -61,7 +61,7 @@ class TorchDataset(Dataset):
             pad_right_ids=mapped['pad_right_ids']
         )
         output = jax.tree.map(lambda x: np.array(x), ret)
-        assert jax.tree.all(jax.tree.map(lambda x: x.dtype != np.dtype(object), output)), f"Type: {jax.tree.map(lambda x: x.dtype, output)}"
+        assert jax.tree.all(jax.tree.map(lambda x: x.dtype != np.dtype(object), output)), f"Type: {jax.tree.map(lambda x: x.dtype, output)}\nOutput: {output}"
         
         return output
 
