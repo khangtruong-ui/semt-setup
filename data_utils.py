@@ -5,6 +5,7 @@ from datasets import load_dataset, load_from_disk
 from PIL import Image
 import grain.python as grain
 import jax
+from torch.utils.data import DataLoader
 
 from config import *
 
@@ -64,7 +65,13 @@ def get_set(ds):
         sampler=sampler,
         operations=[grain.Batch(batch_size=BATCH_SIZE * jax.local_device_count(), drop_remainder=True)],
     )
-    return loader
+    torch_loader = DataLoader(mapped_ds, 
+                              batch_size=BATCH_SIZE * jax.local_device_count(),
+                              sampler=sampler,
+                              drop_last=True,
+                              num_workers=os.cpu_count() // 2
+                             )
+    return torch_loader
 
 def get_train_set():
     return get_set(load_dataset(os.environ['DATASET'])['train'].with_format('np'))
