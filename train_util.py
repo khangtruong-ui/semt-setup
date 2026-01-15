@@ -26,7 +26,7 @@ def create_train_state(model):
     captions = jnp.zeros((BATCH_SIZE * jax.local_device_count(), NUM_CAPTIONS, INPUT_SEQ_LENGTH), dtype=jnp.int32)
     captions = jax.device_put(captions, sharding)
     params = model.init(jax.random.key(0), (imgs, captions))
-    tx = optax.adam(5e-5)
+    tx = optax.adam(1e-4)
     train_state = TrainState.create(apply_fn=model.__call__, params=params, tx=tx)
     return train_state
 
