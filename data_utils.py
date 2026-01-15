@@ -42,6 +42,16 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
 
     return mapping
 
+class TorchDataset(Dataset):
+    def __init__(self, ds):
+        self.ds = ds
+
+    def __len__(self):
+        return len(self.ds)
+
+    def __getitem__(self, i):
+        return jax.tree.map(np.array, self.ds[i])
+
 def get_set(ds):
     sampler = grain.IndexSampler(
         num_records=len(ds),
@@ -59,7 +69,7 @@ def get_set(ds):
     tokenizer = load_tokenizer()
     sentence_map = sentences_mapper(tokenizer)
     # ds = grain.MapDataset.source(ds)
-    ds = Dataset(ds)
+    # ds = Dataset(ds)
     mapped_ds = ds.map(sentence_map)
     
     loader = grain.DataLoader(
