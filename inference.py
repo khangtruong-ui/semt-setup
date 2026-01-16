@@ -22,6 +22,7 @@ non_sharding = no_sharding = NamedSharding(mesh, P())
 def load_checkpoint():
     fname = sorted(glob.glob('*.msgpack'))[-1]
     print('====== CRAFTING MODELS ======')
+    print(f'USED WEIGHT: {fname}')
     model = MeshedFastCaption()
     state = create_train_state(model)
     with open(fname, 'rb') as f:
