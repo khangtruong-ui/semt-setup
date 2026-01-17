@@ -99,21 +99,7 @@ class SelfAttention(nn.Module):
         return out
         
 # ==================================== VISION MODELS =================================
-"""
-efficientnetb2 = eqv.models.classification.efficientnet_b2('https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b2_ra-bcdf34b7.pth')
-
-class EfficientNetVision(nn.Module):
-    def preprocessing(self, x):
-        mean = jnp.array([0.485, 0.456, 0.406])
-        dev = jnp.array([0.229, 0.224, 0.225])
-        return (x - mean) / dev
-        
-    def __call__(self, x):
-        x = self.preprocessing(x)
-        out = efficientnetb2.features(x, key=jax.random.key(0))
-        out = efficientnetb2.avgpool(x)
-        return out
-"""
+efficientnet = EfficientNetB1()
 
 class EfficientNetVision(nn.Module):
     def preprocessing(self, x):
@@ -125,8 +111,7 @@ class EfficientNetVision(nn.Module):
         
     def __call__(self, inp):
         x = self.preprocessing(inp)
-        backbone = EfficientNetB1()
-        return backbone.forward(x)
+        return efficientnet.forward(x)
 
 class ShortVision(nn.Module):
     def preprocessing(self, x):
