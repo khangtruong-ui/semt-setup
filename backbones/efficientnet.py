@@ -120,6 +120,10 @@ class EfficientNetB1(linen.Module):
     x = linen.swish(x)
 
     return x
+
+  def forward(self, img):
+    weights = self.pretrained_weights()
+    return self.apply(weights, img, train=False, mutable=False)
     
   def pretrained_weights(self):
     eff = keras.applications.EfficientNetB1(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
