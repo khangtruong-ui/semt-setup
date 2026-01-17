@@ -2,8 +2,8 @@ import einops
 import jax
 import jax.numpy as jnp
 import flax.linen as nn
-# import eqxvision as eqv
 
+from backbones.efficientnet import EfficientNetB1
 from config import *
 
 # =========================== UTILITIES ====================================
@@ -114,6 +114,19 @@ class EfficientNetVision(nn.Module):
         out = efficientnetb2.avgpool(x)
         return out
 """
+
+class EfficientNetVision(nn.Module):
+    def preprocessing(self, x):
+        x = jax.image.resize(x, (x.shape[0], 256, 256, 3), 'bicubic')
+        x /= 255.
+        mean = jnp.array([0.485, 0.456, 0.406])
+        dev = jnp.array([0.229, 0.224, 0.225])
+        return (x - mean) / dev
+        
+    def __call__(self, inp):
+        x = self.preprocessing(inp)
+        backbone = EfficientNetB1()
+        return backbone.forward(x)
 
 class ShortVision(nn.Module):
     def preprocessing(self, x):
@@ -228,7 +241,7 @@ class MultiLayerNoMesh(nn.Module):
 class MeshedFastCaption(nn.Module):
     def setup(self):
         self.vision = {
-            # 3: EfficientNetVision,
+            3: EfficientNetVision,
             5: ShortVision
         }[BACKBONE_CHOICE]()
         self.decoder = {
