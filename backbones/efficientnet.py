@@ -7,6 +7,8 @@ import tensorflow as tf
 import keras
 
 
+created_efficientnet = None
+
 def round_filters(filters, width_coeff, divisor=8):
   """Round number of filters based on width multiplier."""
   filters *= width_coeff
@@ -127,7 +129,8 @@ class EfficientNetB1(linen.Module):
     return self.apply(weights, img, train=False, mutable=False)
     
   def pretrained_weights(self):
-    eff = keras.applications.EfficientNetB1(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
+    global created_efficientnet
+    eff = created_efficientnet = keras.applications.EfficientNetB1(weights="imagenet", include_top=False, input_shape=(224, 224, 3)) if created_efficientnet is None else created_efficientnet 
     weights = eff.variables
     variables = transform_weights(weights)
     return variables
