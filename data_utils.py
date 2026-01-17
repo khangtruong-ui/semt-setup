@@ -81,8 +81,6 @@ def get_set(ds):
         construct_tokenizer(ds)
     tokenizer = load_tokenizer()
     sentence_map = sentences_mapper(tokenizer)
-    # ds = grain.MapDataset.source(ds)
-    # mapped_ds = ds.map(sentence_map).map(lambda x: jax.tree.map(np.array, x))
     mapped_ds = TorchDataset(ds, sentence_map)
     
     loader = grain.DataLoader(
