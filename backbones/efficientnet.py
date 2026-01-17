@@ -123,6 +123,7 @@ class EfficientNetB1(linen.Module):
 
   def forward(self, img):
     weights = self.pretrained_weights()
+    print(jax.tree.map(jnp.shape, weights))
     return self.apply(weights, img, train=False, mutable=False)
     
   def pretrained_weights(self):
