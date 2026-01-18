@@ -114,7 +114,10 @@ def get_set(ds):
     return torch_loader, loader_length
 
 def get_train_set():
-    return get_set(load_dataset(os.environ['DATASET'])['train'].with_format('np'))
+    return get_set(load_dataset(os.environ['TRAIN_DATASET'])['train'].with_format('np'))
+
+def get_test_set():
+    return get_set(load_dataset(os.environ['TEST_DATASET'])['test'].with_format('np'))
 
 
 
