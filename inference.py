@@ -40,7 +40,7 @@ def reverse_tensor(tens):
     return collected
 
 def inference(model, weights):
-    test_set, ds_length = get_train_set()
+    test_set, ds_length = get_test_set()
 
     @jax.jit
     def loop_body(image):
