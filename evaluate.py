@@ -1,7 +1,6 @@
 import nltk
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from nltk.translate.meteor_score import meteor_score
-from rouge_score import rouge_scorer
 
 from functools import reduce
 import json
@@ -30,16 +29,12 @@ def compute_metric_mapping(predicted, corpus):
 
     meteor = meteor_score(references, candidate)
     
-    rouge = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
-    rouge = scorer.score('The quick brown fox jumps over the lazy dog', 'The quick brown dog jumps over the lazy fox')
-    rouge_l = rouge['rougeL'].fmeasure
     return dict(
         bleu_1=bleu_1,
         bleu_2=bleu_2,
         bleu_3=bleu_3,
         bleu_4=bleu_4,
         meteor=meteor,
-        rouge_l=rouge_l
     )
     
 
