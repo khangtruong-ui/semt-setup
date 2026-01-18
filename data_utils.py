@@ -30,25 +30,30 @@ def load_tokenizer():
 
 def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
     def mapping(item):
-        key = 'caption' if 'caption' in item else 'raw'
-        caption = item[key]
+        item['pad_left_ids'], item['pad_right_ids'] = [], []
         
-        def select(word):
-            if word in tokenizer:
-                return tokenizer[word]
-            else:
-                print('Unknown word:', word.encode())
-                return 0
-        
-        ids = [select(word) for word in caption.lower().split()]
-        pad_left_ids = [1] + ids
-        pad_right_ids = ids + [2]
-        pad_left_ids.extend([0] * (max_length - len(pad_left_ids)))
-        pad_right_ids.extend([0] * (max_length - len(pad_right_ids)))
-        item['pad_left_ids'] = np.repeat(np.array(pad_left_ids)[None, ...], NUM_CAPTIONS, axis=0)
-        item['pad_right_ids'] = np.repeat(np.array(pad_right_ids)[None, ...], NUM_CAPTIONS, axis=0)
+        for key in ['caption', 'raw', 'raw_1', 'raw_2', 'raw_3', 'raw_4']:
+            if key not in item:
+                continue
+                
+            caption = item[key]
+            
+            def select(word):
+                if word in tokenizer:
+                    return tokenizer[word]
+                else:
+                    print('Unknown word:', word.encode())
+                    return 0
+            
+            ids = [select(word) for word in caption.lower().split()]
+            pad_left_ids = [1] + ids
+            pad_right_ids = ids + [2]
+            pad_left_ids.extend([0] * (max_length - len(pad_left_ids)))
+            pad_right_ids.extend([0] * (max_length - len(pad_right_ids)))
+            item['pad_left_ids'].append(pad_left_ids)
+            item['pad_right_ids'].append(pad_right_ids)
 
-        return item
+        return {k: np.array(item[k]) for k in item}
 
     return mapping
 
