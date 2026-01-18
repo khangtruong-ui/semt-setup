@@ -10,7 +10,7 @@ from flax import serialization
 import glob
 import json
 
-from data_utils import get_train_set, load_tokenizer
+from data_utils import get_train_set, get_test_set, load_tokenizer
 from model import MeshedFastCaption
 from train_util import create_train_state
 
