@@ -57,8 +57,8 @@ def inference(model, weights):
         out_caption = reverse_tensor(batch['pad_right_ids'])
         print(out_caption)
         print(out_sentence)
-        ret_dict.append(out_sentence.tolist())
-        res_dict.append(out_caption.tolist())
+        ret_dict.extend(out_sentence.tolist())
+        res_dict.extend(out_caption.tolist())
 
     with open('predict.json', 'w') as f:
         json.dump(ret_dict, f)
