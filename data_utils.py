@@ -42,7 +42,7 @@ def sentences_mapper(tokenizer, max_length=MAX_LENGTH):
                 if word in tokenizer:
                     return tokenizer[word]
                 else:
-                    print('Unknown word:', word.encode())
+                    # print('Unknown word:', word.encode())
                     return 0
             
             ids = [select(word) for word in caption.lower().split()]
