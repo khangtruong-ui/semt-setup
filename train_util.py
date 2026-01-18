@@ -31,7 +31,7 @@ def create_train_state(model):
     return train_state
 
 
-def train_loop(model, train_state, ds, epoches):
+def train_loop(model, train_state, ds, length, epoches):
 
     @jax.jit
     def train_step(train_state, image, feed, label):
