@@ -55,8 +55,6 @@ def inference(model, weights):
         out = loop_body(image)
         out_sentence = reverse_tensor(out)
         out_caption = reverse_tensor(batch['pad_right_ids'])
-        print(out_caption)
-        print(out_sentence)
         ret_dict.extend(out_sentence.tolist())
         res_dict.extend(out_caption.tolist())
 
