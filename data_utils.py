@@ -109,7 +109,9 @@ def get_set(ds):
                               drop_last=True,
                               num_workers=os.cpu_count() // 2
                              )
-    return torch_loader
+    
+    loader_length = len(ds) // jax.local_device_count() // BATCH_SIZE
+    return torch_loader, loader_length
 
 def get_train_set():
     return get_set(load_dataset(os.environ['DATASET'])['train'].with_format('np'))
