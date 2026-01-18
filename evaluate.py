@@ -3,11 +3,12 @@ from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from nltk.translate.meteor_score import meteor_score
 from rouge_score import rouge_scorer
 
+from functools import reduce
 import json
 
 nltk.download('wordnet')
 
-def mapping(predicted, corpus):
+def compute_metric_mapping(predicted, corpus):
     candidate = predicted.split()
     references = [x.split() for x in corpus]
 
@@ -47,6 +48,21 @@ def main():
         predicted = json.load(p)
         label = json.load(l)
 
+    def sum_reducer(metrics, new_metrics):
+        if metrics is None:
+            return new_metrics
+    
+        return {k: metrics[k] + new_metrics[k] for k in metrics}
+
+    metr = [compute_metric_mapping(u, v) for u, v in zip(predicted, label)]
+    summed = reduce(sum_reducer, metr, None)
+    meant = {k: v / len(metr) for k, v in summed.items()}
+    print(meant)
+    return meant
+    
+
+if __name__ == '__main__':
+    main()
     
 
 
