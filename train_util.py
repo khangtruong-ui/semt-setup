@@ -31,7 +31,7 @@ def create_train_state(model):
     return train_state
 
 
-def train_loop(model, train_state, ds, length, epoches):
+def train_loop(model, train_state, ds, ds_length, epoches):
 
     @jax.jit
     def train_step(train_state, image, feed, label):
@@ -49,7 +49,6 @@ def train_loop(model, train_state, ds, length, epoches):
         return loss, new_state
 
     def train_epoch(epoch, train_state, ds):
-        ds_length = 31500 * 4 // BATCH_SIZE // jax.local_device_count()
         with tqdm(total=ds_length, desc=f"Epoch {epoch}") as pbar:
             running_loss = 0.
             for i, item in zip(range(ds_length), ds):
