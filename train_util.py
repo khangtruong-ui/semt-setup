@@ -57,8 +57,9 @@ def train_loop(model, train_state, ds, ds_length, epoches):
                 pad_left = jax.device_put(item['pad_left_ids'], sharding)
                 pad_right = jax.device_put(item['pad_right_ids'], sharding)
                 loss, train_state = train_step(train_state, image, pad_left, pad_right)
+                running_loss = (running_loss * i + loss) / (i + 1)
                 pbar.update(1)
-                pbar.set_postfix({'loss': f"{(running_loss * i + loss) / (i + 1):.4f}"})
+                pbar.set_postfix({'loss': f"{running_loss:.4f}"})
 
         return train_state
 
