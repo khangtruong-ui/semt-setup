@@ -37,8 +37,8 @@ def compute_metric_mapping(predicted, corpus):
     
 
 def main():
-    pred_files = sorted(glob.glob(f'{os.environ['INFERENCE_DIR']}/predict*.json'))
-    label_files = sorted(glob.glob(f'{os.environ['INFERENCE_DIR']}/label*.json'))
+    pred_files = sorted(glob.glob(f"{os.environ['INFERENCE_DIR']}/predict*.json"))
+    label_files = sorted(glob.glob(f"{os.environ['INFERENCE_DIR']}/label*.json"))
     for pred_file, label_file in zip(pred_files, label_files):
         print(f'Prediction file: {pred_file}\nLabel file: {label_file}')
         with open(pred_file) as p, open(label_file) as l:
