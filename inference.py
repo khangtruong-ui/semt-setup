@@ -55,7 +55,7 @@ def inference(model, weights, weights_name):
     
     ret_dict = []
     res_dict = []
-    for _, batch in zip(range(ds_length), test_set):
+    for _, batch in zip(tqdm(range(ds_length)), test_set):
         batch = jax.tree.map(np.array, batch)
         image = jax.device_put(batch['image'], sharding)
         out = compiled_inference_function(image, weights)
