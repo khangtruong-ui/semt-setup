@@ -44,6 +44,7 @@ def reverse_tensor(tens):
     return collected
 
 def inference(model, weights, weights_name):
+    global compiled_inference_function
     test_set, ds_length = get_test_set()
 
     @jax.jit
