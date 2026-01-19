@@ -70,7 +70,7 @@ def train_loop(model, train_state, ds, ds_length, epoches):
     with ThreadPoolExecutor(max_workers=4) as executor:
         for epoch in range(epoches):
             train_state = train_epoch(epoch, train_state, iter_ds)
-            if (epoch + 1) % 5 == 0:
+            if (epoch + 1) % 10 == 0:
                 executor.submit(save_checkpoint, train_state.params, epoch)
 
     return train_state
