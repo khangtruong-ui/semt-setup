@@ -8,8 +8,8 @@ import json
 nltk.download('wordnet')
 
 def compute_metric_mapping(predicted, corpus):
-    candidate = predicted.split()
-    references = [x.split() for x in corpus]
+    candidate = predicted.replace('[BEGIN]', '').replace('[END]', '').split()
+    references = [x.replace('[BEGIN]', '').replace('[END]', '').split() for x in corpus]
 
     # BLEU-1 score (unigram)
     bleu_1 = sentence_bleu(references, candidate, weights=(1, 0, 0, 0))
