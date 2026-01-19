@@ -25,7 +25,6 @@ def load_checkpoint(model_index=-1):
     save_dir = os.environ['SAVE_DIR']
     fname = sorted(glob.glob(save_dir + '/*.msgpack'))[model_index]
     int_string = re.findall(r'-?\d+', fname)[0]
-    print('====== CRAFTING MODELS ======')
     print(f'USED WEIGHT: {fname}')
     model = MeshedFastCaption()
     state = create_train_state(model)
@@ -73,7 +72,6 @@ def main():
     model = MeshedFastCaption()
     for item in range(len(os.listdir(os.environ['SAVE_DIR']))):
         weights, fname = load_checkpoint(item)
-        print('===== INFERENCING =====')
         inference(model, weights, fname)
 
 if __name__ == '__main__':
