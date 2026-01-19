@@ -62,6 +62,7 @@ def inference(model, weights, weights_name):
         ret_dict.extend(out_sentence.tolist())
         res_dict.extend(out_caption.tolist())
 
+    os.mkdir(os.environ['INFERENCE_DIR'], exist_ok=True)
     with open(f"{os.environ['INFERENCE_DIR']}/predict-{weights_name}.json", 'w') as f:
         json.dump(ret_dict, f)
 
