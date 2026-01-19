@@ -62,10 +62,10 @@ def inference(model, weights, weights_name):
         ret_dict.extend(out_sentence.tolist())
         res_dict.extend(out_caption.tolist())
 
-    with open(f'predict-{weights_name}.json', 'w') as f:
+    with open(f'{os.environ['INFERENCE_DIR']}/predict-{weights_name}.json', 'w') as f:
         json.dump(ret_dict, f)
 
-    with open(f'label-{weights_name}.json', 'w') as f:
+    with open(f'{os.environ['INFERENCE_DIR']}/label-{weights_name}.json', 'w') as f:
         json.dump(res_dict, f)
         
 def main():
