@@ -93,8 +93,8 @@ class SelfAttention(nn.Module):
         length = inp.shape[-2]
         mask = jnp.arange(length)[..., None] >= jnp.arange(length)[None, ...]
         mask = mask[None, None, ...]
-        mask = jnp.broadcast_to(mask, (inp.shape[0], ATTENTION_HEAD, length, length))
         minp = inp.reshape((-1, inp.shape[-2], inp.shape[-1]))
+        mask = jnp.broadcast_to(mask, (minp.shape[0], ATTENTION_HEAD, length, length))
         out = MultiheadAttention()(minp, minp, minp, mask=mask).reshape(inp.shape)
         return out
         
