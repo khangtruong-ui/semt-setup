@@ -10,6 +10,7 @@ from flax import serialization
 import glob
 import json
 import os
+import re
 
 from data_utils import get_train_set, get_test_set, load_tokenizer
 from model import MeshedFastCaption
@@ -20,15 +21,16 @@ sharding = NamedSharding(mesh, P('data'))
 non_sharding = no_sharding = NamedSharding(mesh, P())
 
 
-def load_checkpoint():
+def load_checkpoint(model_index=-1):
     save_dir = os.environ['SAVE_DIR']
-    fname = sorted(glob.glob(save_dir + '/*.msgpack'))[-1]
+    fname = sorted(glob.glob(save_dir + '/*.msgpack'))[model_index]
+    int_string = re.findall(r'-?\d+', fname)[0]
     print('====== CRAFTING MODELS ======')
     print(f'USED WEIGHT: {fname}')
     model = MeshedFastCaption()
     state = create_train_state(model)
     with open(fname, 'rb') as f:
-        return serialization.from_bytes(state.params, f.read())
+        return serialization.from_bytes(state.params, f.read()), int_string
 
 def reverse_tensor(tens):
     tokenizer = load_tokenizer()
@@ -41,7 +43,7 @@ def reverse_tensor(tens):
     collected = np.array([[mapper(cap) for cap in cap_per_batch] for cap_per_batch in tens]).reshape(tens.shape[:-1])
     return collected
 
-def inference(model, weights):
+def inference(model, weights, weights_name):
     test_set, ds_length = get_test_set()
 
     @jax.jit
@@ -60,17 +62,18 @@ def inference(model, weights):
         ret_dict.extend(out_sentence.tolist())
         res_dict.extend(out_caption.tolist())
 
-    with open('predict.json', 'w') as f:
+    with open(f'predict-{weights_name}.json', 'w') as f:
         json.dump(ret_dict, f)
 
-    with open('label.json', 'w') as f:
+    with open(f'label-{weights_name}.json', 'w') as f:
         json.dump(res_dict, f)
         
 def main():
     model = MeshedFastCaption()
-    weights = load_checkpoint()
-    print('===== INFERENCING =====')
-    inference(model, weights)
+    for item in range(len(os.listdir(os.environ['SAVE_DIR']))):
+        weights, fname = load_checkpoint(item)
+        print('===== INFERENCING =====')
+        inference(model, weights, fname)
 
 if __name__ == '__main__':
     main()
