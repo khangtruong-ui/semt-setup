@@ -243,7 +243,8 @@ class MeshedFastCaption(nn.Module):
         img = self.adapt(img)
         img = img.reshape((img.shape[0], -1, img.shape[-1]))
         seq = self.embedding(txt)
-        out = self.decoder((seq, img[:, None, ...]))
+        img = jnp.repeat(img[:, None, ...], seq.shape[1], axis=1)
+        out = self.decoder((seq, img))
         return self.dense(out)
 
     def _batch_generate_from_index(self, imgs, txt, index):
