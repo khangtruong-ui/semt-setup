@@ -14,4 +14,4 @@ model = MeshedFastCaption()
 state = create_train_state(model)
 
 print('===== TRAINING ======')
-state = train_loop(model, state, ds, ds_length, 60)
+state = train_loop(model, state, ds, ds_length, 100)
