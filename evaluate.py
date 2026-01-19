@@ -4,6 +4,8 @@ from nltk.translate.meteor_score import meteor_score
 
 from functools import reduce
 import json
+import glob
+import os
 
 nltk.download('wordnet')
 
@@ -35,21 +37,24 @@ def compute_metric_mapping(predicted, corpus):
     
 
 def main():
-    with open('predict.json') as p, open('label.json') as l:
-        predicted = json.load(p)
-        label = json.load(l)
-
-    def sum_reducer(metrics, new_metrics):
-        if metrics is None:
-            return new_metrics
+    pred_files = sorted(glob.glob(f'{os.environ['INFERENCE_DIR']}/predict*.json'))
+    label_files = sorted(glob.glob(f'{os.environ['INFERENCE_DIR']}/label*.json'))
+    for pred_file, label_file in zip(pred_files, label_files):
+        print(f'Prediction file: {pred_file}\nLabel file: {label_file}')
+        with open(pred_file) as p, open(label_file) as l:
+            predicted = json.load(p)
+            label = json.load(l)
     
-        return {k: metrics[k] + new_metrics[k] for k in metrics}
-
-    metr = [compute_metric_mapping(u, v) for u, v in zip(predicted, label)]
-    summed = reduce(sum_reducer, metr, None)
-    meant = {k: v / len(metr) for k, v in summed.items()}
-    print(meant)
-    return meant
+        def sum_reducer(metrics, new_metrics):
+            if metrics is None:
+                return new_metrics
+        
+            return {k: metrics[k] + new_metrics[k] for k in metrics}
+    
+        metr = [compute_metric_mapping(u, v) for u, v in zip(predicted, label)]
+        summed = reduce(sum_reducer, metr, None)
+        meant = {k: v / len(metr) for k, v in summed.items()}
+        print(meant)
     
 
 if __name__ == '__main__':
