@@ -73,17 +73,18 @@ class MultiheadStaticAttention(nn.Module):
 
     def __call__(self, q, k, v):
         batch = q.shape[0]
+        num_cap = q.shape[1]
         length = q.shape[2]
         dim = q.shape[3]
         Q_ = self.Q(q)
         V_ = self.V(k)
-        Q = Q_.reshape(batch, length, ATTENTION_HEAD, dim // ATTENTION_HEAD)
-        V = V_.reshape(batch, length, ATTENTION_HEAD, dim // ATTENTION_HEAD)
+        Q = Q_.reshape(batch * num_cap, length, ATTENTION_HEAD, dim // ATTENTION_HEAD)
+        V = V_.reshape(batch * num_cap, length, ATTENTION_HEAD, dim // ATTENTION_HEAD)
         eij = jnp.einsum('ehd, blhd -> belh', self.memory, Q)
         eij = jnp.where(eij > 0, eij, 0.)
         out1 = jnp.einsum('belh, blhd -> behd', eij, V)
         out2 = jnp.einsum('behd, belh -> blhd', out1, eij)
-        out = self.norm(out2.reshape(batch, 1, length, dim))
+        out = self.norm(out2.reshape(batch, num_cap, length, dim))
         return out
 
 # ==================================== SUPPORT CLASS =================================
