@@ -13,19 +13,15 @@ def compute_metric_mapping(predicted, corpus):
 
     # BLEU-1 score (unigram)
     bleu_1 = sentence_bleu(references, candidate, weights=(1, 0, 0, 0))
-    print(f"BLEU-1 Score: {bleu_1:.4f}")
     
     # BLEU-2 score (bigram)
     bleu_2 = sentence_bleu(references, candidate, weights=(0.5, 0.5, 0, 0))
-    print(f"BLEU-2 Score: {bleu_2:.4f}")
     
     # BLEU-3 score (trigram)
     bleu_3 = sentence_bleu(references, candidate, weights=(0.33, 0.33, 0.34, 0))
-    print(f"BLEU-3 Score: {bleu_3:.4f}")
     
     # BLEU-4 score (quadrigram)
     bleu_4 = sentence_bleu(references, candidate, weights=(0.25, 0.25, 0.25, 0.25))
-    print(f"BLEU-4 Score: {bleu_4:.4f}")
 
     meteor = meteor_score(references, candidate)
     
