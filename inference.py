@@ -53,7 +53,7 @@ def inference(model, weights, weights_name):
 
     ret_dict = []
     res_dict = []
-    for _, batch in zip(range(2), test_set):
+    for _, batch in zip(range(ds_length), test_set):
         batch = jax.tree.map(np.array, batch)
         image = jax.device_put(batch['image'], sharding)
         out = loop_body(image)
@@ -62,10 +62,10 @@ def inference(model, weights, weights_name):
         ret_dict.extend(out_sentence.tolist())
         res_dict.extend(out_caption.tolist())
 
-    with open(f'{os.environ['INFERENCE_DIR']}/predict-{weights_name}.json', 'w') as f:
+    with open(f"{os.environ['INFERENCE_DIR']}/predict-{weights_name}.json", 'w') as f:
         json.dump(ret_dict, f)
 
-    with open(f'{os.environ['INFERENCE_DIR']}/label-{weights_name}.json', 'w') as f:
+    with open(f"{os.environ['INFERENCE_DIR']}/label-{weights_name}.json", 'w') as f:
         json.dump(res_dict, f)
         
 def main():
