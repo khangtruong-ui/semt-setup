@@ -9,6 +9,7 @@ from tqdm import tqdm
 from flax import serialization
 import glob
 import json
+import os
 
 from data_utils import get_train_set, get_test_set, load_tokenizer
 from model import MeshedFastCaption
@@ -20,7 +21,8 @@ non_sharding = no_sharding = NamedSharding(mesh, P())
 
 
 def load_checkpoint():
-    fname = sorted(glob.glob('*.msgpack'))[-1]
+    save_dir = os.environ['SAVE_DIR']
+    fname = sorted(glob.glob(save_dir + '/*.msgpack'))[-1]
     print('====== CRAFTING MODELS ======')
     print(f'USED WEIGHT: {fname}')
     model = MeshedFastCaption()
