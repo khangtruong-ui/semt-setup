@@ -20,6 +20,7 @@ mesh = Mesh(np.array(jax.devices()), ('data',))
 sharding = NamedSharding(mesh, P('data'))
 non_sharding = no_sharding = NamedSharding(mesh, P())
 
+compiled_inference_function = None
 
 def load_checkpoint(model_index=-1):
     save_dir = os.environ['SAVE_DIR']
@@ -46,16 +47,18 @@ def inference(model, weights, weights_name):
     test_set, ds_length = get_test_set()
 
     @jax.jit
-    def loop_body(image):
+    def loop_body(image, weights):
         out = model.apply(weights, image, method=model.batch_generate_caption)
         return out
 
+    compiled_inference_function = compiled_inference_function or loop_body
+    
     ret_dict = []
     res_dict = []
     for _, batch in zip(range(ds_length), test_set):
         batch = jax.tree.map(np.array, batch)
         image = jax.device_put(batch['image'], sharding)
-        out = loop_body(image)
+        out = compiled_inference_function(image, weights)
         out_sentence = reverse_tensor(out)[:, 0]
         out_caption = reverse_tensor(batch['pad_right_ids'])
         ret_dict.extend(out_sentence.tolist())
