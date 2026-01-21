@@ -242,7 +242,8 @@ class MeshedFastCaption(nn.Module):
     def setup(self):
         self.vision = {
             3: EfficientNetVision,
-            5: ShortVision
+            5: ShortVision,
+            7: VitVision
         }[BACKBONE_CHOICE]()
         self.decoder = {
             0: MultiLayerMeshed,
