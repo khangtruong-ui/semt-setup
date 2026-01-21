@@ -6,10 +6,10 @@ import jax.numpy as jnp
 
 class Vit(nn.Module):
     def setup(self):
-        pass
+        self.crafted_model = get_backbone_and_weight()
 
     def __call__(self, x):
-        vision_model, vision_params = crafted_model()
+        vision_model, vision_params = self.crafted_model
         output = vision_model.apply(vision_params, x)
         return output['last_hidden_state']
 
@@ -24,4 +24,5 @@ def get_backbone_and_weight():
     variables = {'params': clip.params}
     clip_bind = module.bind(variables)
     vision_model, vision_params = clip_bind.vision_model.unbind()
+    crafted_model = vision_model, vision_params
     return vision_model, vision_params
