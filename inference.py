@@ -49,7 +49,6 @@ def inference(model, weights, weights_name):
 
     @jax.jit
     def loop_body(image, weights):
-        print('Tracing loop_body', image.shape, jax.tree.map(jnp.shape, weights))
         out = model.apply(weights, image, method=model.batch_generate_caption)
         return out
 
