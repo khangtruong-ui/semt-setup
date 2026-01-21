@@ -4,6 +4,7 @@ import jax.numpy as jnp
 import flax.linen as nn
 
 from backbones.efficientnet import EfficientNetB1
+from backbones.vit import Vit
 from config import *
 
 # =========================== UTILITIES ====================================
@@ -113,6 +114,19 @@ class EfficientNetVision(nn.Module):
     def __call__(self, inp):
         x = self.preprocessing(inp)
         return efficientnet.forward(x)
+
+class VitVision(nn.Module):
+    def setup(self):
+        self.backbone = ViT()
+        
+    def preprocessing(self, x):
+        x = jax.image.resize(x, (x.shape[0], 224, 224, 3), 'bicubic')
+        x /= 255.
+        return x
+
+    def __call__(self, x):
+        x = self.preprocessing(x)
+        return self.backbone(x)
 
 class ShortVision(nn.Module):
     def preprocessing(self, x):
