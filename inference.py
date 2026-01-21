@@ -53,7 +53,7 @@ def inference(model, weights, weights_name):
         out = model.apply(weights, image, method=model.batch_generate_caption)
         return out
 
-    compiled_inference_function = compiled_inference_function if compiled_inference_function is not None loop_body
+    compiled_inference_function = compiled_inference_function if compiled_inference_function is not None else loop_body
     
     ret_dict = []
     res_dict = []
