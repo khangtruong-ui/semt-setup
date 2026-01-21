@@ -117,7 +117,7 @@ class EfficientNetVision(nn.Module):
 
 class VitVision(nn.Module):
     def setup(self):
-        self.backbone = ViT()
+        self.backbone = Vit()
         
     def preprocessing(self, x):
         x = jax.image.resize(x, (x.shape[0], 224, 224, 3), 'bicubic')
