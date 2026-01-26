@@ -122,7 +122,9 @@ def get_train_set():
     return get_set(load_dataset(os.environ['TRAIN_DATASET'])['train'].with_format('np'))
 
 def get_test_set():
-    return get_set(load_dataset(os.environ['TEST_DATASET'])['test'].with_format('np'))
+    ds = load_dataset(os.environ['TEST_DATASET'])
+    ds = ds['test'] if 'test' in ds else ds['train']
+    return get_set(ds.with_format('np'))
 
 
 
