@@ -3,7 +3,7 @@ print('===== TRAINING SCRIPT =====')
 import os
 
 from model import MeshedFastCaption
-from train_util import *
+from train_utils import *
 from data_utils import get_train_set
 
 print('===== CRAFTING DATASETS =====')
