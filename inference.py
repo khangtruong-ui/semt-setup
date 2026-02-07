@@ -14,7 +14,7 @@ import re
 
 from data_utils import get_train_set, get_test_set, load_tokenizer
 from model import MeshedFastCaption
-from train_util import create_train_state
+from train_utils import create_train_state
 
 mesh = Mesh(np.array(jax.devices()), ('data',))
 sharding = NamedSharding(mesh, P('data'))
@@ -23,7 +23,7 @@ non_sharding = no_sharding = NamedSharding(mesh, P())
 compiled_inference_function = None
 
 def load_checkpoint(model_index=-1):
-    save_dir = os.environ['SAVE_DIR']
+    save_dir = os.environ['SEMT_MODEL_CHECKPOINT_DIR']
     fname = sorted(glob.glob(save_dir + '/*.msgpack'))[model_index]
     int_string = re.findall(r'\d+', fname)[0]
     print(f'USED WEIGHT: {fname}')
