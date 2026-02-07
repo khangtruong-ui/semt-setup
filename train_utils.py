@@ -18,7 +18,7 @@ non_sharding = no_sharding = NamedSharding(mesh, P())
 
 def save_checkpoint(params, i):
     target_bytes = serialization.to_bytes(params)
-    save_path = os.environ['SAVE_DIR']
+    save_path = os.environ['SEMT_MODEL_CHECKPOINT_DIR']
     os.makedirs(save_path, exist_ok=True)
     with open(f'{save_path}/weights-{i:04d}.msgpack', 'wb') as f:
         f.write(target_bytes)
