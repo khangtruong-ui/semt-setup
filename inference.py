@@ -74,7 +74,7 @@ def inference(model, weights, weights_name):
         
 def main():
     model = MeshedFastCaption()
-    for item in range(len(os.listdir(os.environ['SAVE_DIR']))):
+    for item in range(len(os.listdir(os.environ['SEMT_MODEL_CHECKPOINT_DIR']))):
         weights, fname = load_checkpoint(item)
         inference(model, weights, fname)
 
