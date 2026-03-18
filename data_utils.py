@@ -124,7 +124,7 @@ def get_train_set():
 def get_test_set():
     ds = load_dataset(os.environ['TEST_DATASET'])
     ds = ds['test'] if 'test' in ds else ds['train']
-    return get_set(ds.with_format('np'), batch_size=BATCH_SIZE * 16)
+    return get_set(ds.with_format('np'), batch_size=BATCH_SIZE)
 
 
 
