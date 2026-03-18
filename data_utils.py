@@ -78,7 +78,7 @@ class TorchDataset(Dataset):
         
         return output
 
-def get_set(ds):
+def get_set(ds, batch_size=BATCH_SIZE):
     sampler = grain.IndexSampler(
         num_records=len(ds),
         shard_options=grain.ShardOptions(
@@ -109,22 +109,22 @@ def get_set(ds):
     )
 
     torch_loader = DataLoader(mapped_ds, 
-                              batch_size=BATCH_SIZE * jax.local_device_count(),
+                              batch_size=batch_size * jax.local_device_count(),
                               sampler=torch_sampler,
                               drop_last=True,
                               num_workers=os.cpu_count() // 2
                              )
     
-    loader_length = len(ds) // jax.local_device_count() // BATCH_SIZE
+    loader_length = len(ds) // jax.local_device_count() // batch_size
     return torch_loader, loader_length
 
 def get_train_set():
-    return get_set(load_dataset(os.environ['TRAIN_DATASET'])['train'].with_format('np'))
+    return get_set(load_dataset(os.environ['TRAIN_DATASET'])['train'].with_format('np'), batch_size=BATCH_SIZE)
 
 def get_test_set():
     ds = load_dataset(os.environ['TEST_DATASET'])
     ds = ds['test'] if 'test' in ds else ds['train']
-    return get_set(ds.with_format('np'))
+    return get_set(ds.with_format('np'), batch_size=BATCH_SIZE * 16)
 
 
 
