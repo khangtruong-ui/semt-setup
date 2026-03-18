@@ -99,7 +99,7 @@ def get_set(ds, batch_size=BATCH_SIZE):
     loader = grain.DataLoader(
         data_source=mapped_ds,
         sampler=sampler,
-        operations=[grain.Batch(batch_size=BATCH_SIZE * jax.local_device_count(), drop_remainder=True)],
+        operations=[grain.Batch(batch_size=batch_size * jax.local_device_count(), drop_remainder=True)],
     )
     torch_sampler = DistributedSampler(
         dataset=mapped_ds,
