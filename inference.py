@@ -57,19 +57,16 @@ def inference(model, weights, weights_name):
     
     ret_dict = []
     res_dict = []
-    with concurrent.futures.ProcessPoolExecutor(max_workers=16) as executor:
-        for _, batch in zip(tqdm(range(ds_length)), test_set):
-            batch = jax.tree.map(np.array, batch)
-            image = jax.device_put(batch['image'], sharding)
-            out = compiled_inference_function(image, weights)
-            out_sentence = reverse_tensor(out)[:, 0]
-            
-            def foo():
-                out_caption = reverse_tensor(batch['pad_right_ids'])
-                ret_dict.extend(out_sentence.tolist())
-                res_dict.extend(out_caption.tolist())
-
-            executor.submit(foo)
+    
+    for _, batch in zip(tqdm(range(ds_length)), test_set):
+        batch = jax.tree.map(np.array, batch)
+        image = jax.device_put(batch['image'], sharding)
+        out = compiled_inference_function(image, weights)
+        out_sentence = reverse_tensor(out)[:, 0]
+        
+        out_caption = reverse_tensor(batch['pad_right_ids'])
+        ret_dict.extend(out_sentence.tolist())
+        res_dict.extend(out_caption.tolist())
 
     os.makedirs(os.environ['INFERENCE_DIR'], exist_ok=True)
     with open(f"{os.environ['INFERENCE_DIR']}/predict-{weights_name}.json", 'w') as f:
